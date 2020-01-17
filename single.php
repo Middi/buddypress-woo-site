@@ -18,6 +18,7 @@
                     global $post;
                     $author_ID = $post->post_author;
                     $author_URL = get_author_posts_url($author_ID);
+                    $twitter = get_the_author_meta('ju_twitter', $author_ID);
 
                     ?>
                 <div id="post-<?php the_ID(); ;?>" <?php post_class('single-post nobottommargin');?>>
@@ -120,6 +121,9 @@
                             </div>
                             <?php echo nl2br(get_the_author_meta('description')); ?>
                             
+                            <?php if($twitter) { ?>
+                                    <p>Twitter: @<a href="https://twitter.com/<?php echo $twitter; ?>"><?php echo $twitter; ?></a></p>
+                            <?php } ?>
                         </div>
                     </div><!-- Post Single - Author End -->
 

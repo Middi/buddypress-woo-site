@@ -15,6 +15,8 @@ include( get_theme_file_path( '/includes/customizer/enqueue.php' ) );
 include( get_theme_file_path( '/includes/buddypress/profile-tabs.php' ) );
 include( get_theme_file_path( '/includes/utility.php' ) );
 include( get_theme_file_path( '/includes/buddypress/profile-posts.php' ) );
+include( get_theme_file_path( '/includes/admin/author-fields.php' ) );
+include( get_theme_file_path( '/includes/avatar.php' ) );
 
 // Hooks
 add_action( 'wp_enqueue_scripts', 'ju_enqueue' );
@@ -27,5 +29,16 @@ add_action('bp_setup_nav', 'ju_buddypress_profile_tabs');
 remove_action('woocommerce_sidebar', 'woocommerce_get_sidebar', 10);
 
 add_filter('excerpt_more', '__return_false');
-
+add_action('show_user_profile', 'ju_custom_user_profile_fields');
+add_action('edit_user_profile', 'ju_custom_user_profile_fields');
+add_action('personal_options_update', 'ju_save_extra_profile_fields');
+add_action('edit_user_profile_update', 'ju_save_extra_profile_fields');
+add_action('avatar_defaults', 'ju_new_avatar');
 // Shortcodes
+
+add_filter( 'user_contactmethods', function( $user_contactmethods ) {
+ 
+    $user_contactmethods['facebook']    = 'Facebook Address';
+    
+    return $user_contactmethods;
+ } );
