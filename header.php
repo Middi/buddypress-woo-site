@@ -1,13 +1,14 @@
 <!DOCTYPE html>
 <html <?php language_attributes(); ?>>
+
 <head>
-	<meta http-equiv="content-type" content="text/html; charset=<?php bloginfo('charset') ?>>" />
+    <meta http-equiv="content-type" content="text/html; charset=<?php bloginfo('charset') ?>>" />
 
-	<!-- Stylesheets
+    <!-- Stylesheets
 	============================================= -->
-	<?php wp_head(); ?>
+    <?php wp_head(); ?>
 
-	<meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
 </head>
 
 <body <?php body_class( 'stretched no-transition' ); ?>>
@@ -52,19 +53,29 @@
                             <?php
                             if(get_theme_mod('ju_facebook_handle')) {
                                 ?>
-                                <li><a href="https://facebook.com/<?php echo get_theme_mod('ju_facebook_handle'); ?>" class="si-facebook"><span class="ts-icon"><i class="icon-facebook"></i></span><span class="ts-text">Facebook</span></a></li>
-                                <?php
+                            <li><a href="https://facebook.com/<?php echo get_theme_mod('ju_facebook_handle'); ?>"
+                                    class="si-facebook"><span class="ts-icon"><i class="icon-facebook"></i></span><span
+                                        class="ts-text">Facebook</span></a></li>
+                            <?php
                             }
                             
                             if(get_theme_mod('ju_twitter_handle')) {
                                 ?>
-                                <li><a href="https://twitter.com/<?php echo get_theme_mod('ju_twitter_handle'); ?>"  class="si-twitter"><span class="ts-icon"><i class="icon-twitter"></i></span><span class="ts-text">Twitter</span></a></li>
-                                <?php
+                            <li><a href="https://twitter.com/<?php echo get_theme_mod('ju_twitter_handle'); ?>"
+                                    class="si-twitter"><span class="ts-icon"><i class="icon-twitter"></i></span><span
+                                        class="ts-text">Twitter</span></a></li>
+                            <?php
                             }
                             ?>
-                            <li><a href="#" class="si-instagram"><span class="ts-icon"><i class="icon-instagram2"></i></span><span class="ts-text">Instagram</span></a></li>
-                            <li><a href="tel:+55.55.5555555" class="si-call"><span class="ts-icon"><i class="icon-call"></i></span><span class="ts-text">+55.55.5555555</span></a></li>
-                            <li><a href="mailto:info@email.com" class="si-email3"><span class="ts-icon"><i class="icon-email3"></i></span><span class="ts-text">info@email.com</span></a></li>
+                            <li><a href="#" class="si-instagram"><span class="ts-icon"><i
+                                            class="icon-instagram2"></i></span><span
+                                        class="ts-text">Instagram</span></a></li>
+                            <li><a href="tel:+55.55.5555555" class="si-call"><span class="ts-icon"><i
+                                            class="icon-call"></i></span><span class="ts-text">+55.55.5555555</span></a>
+                            </li>
+                            <li><a href="mailto:info@email.com" class="si-email3"><span class="ts-icon"><i
+                                            class="icon-email3"></i></span><span
+                                        class="ts-text">info@email.com</span></a></li>
                         </ul>
                     </div><!-- #top-social end -->
 
@@ -88,7 +99,7 @@
                     }
                     else {
                         ?>
-                        <a href="<?php echo home_url('/') ?>" class="standard-logo"><?php bloginfo('name'); ?></a>
+                    <a href="<?php echo home_url('/') ?>" class="standard-logo"><?php bloginfo('name'); ?></a>
                     <?php
                     }
                     ?>
@@ -133,38 +144,74 @@
                         <!-- Top Cart
                         ============================================= -->
                         <div id="top-cart">
-                            <a href="#" id="top-cart-trigger"><i class="icon-shopping-cart"></i><span>5</span></a>
+                            <a href="#" id="top-cart-trigger"><i
+                                    class="icon-shopping-cart"></i><span><?php echo WC()->cart->get_cart_contents_count(); ?></span></a>
                             <div class="top-cart-content">
                                 <div class="top-cart-title">
                                     <h4>Shopping Cart</h4>
                                 </div>
                                 <div class="top-cart-items">
+
+                                    <?php
+                                    foreach ( WC()->cart->get_cart() as $cart_item_key => $cart_item ) {
+                                        $_product   = apply_filters( 'woocommerce_cart_item_product', $cart_item['data'], $cart_item, $cart_item_key );
+                                        $product_id = apply_filters( 'woocommerce_cart_item_product_id', $cart_item['product_id'], $cart_item, $cart_item_key );
+
+                                        if ( $_product && $_product->exists() && $cart_item['quantity'] > 0 && apply_filters( 'woocommerce_cart_item_visible', true, $cart_item, $cart_item_key ) ) {
+                                            $product_permalink = apply_filters( 'woocommerce_cart_item_permalink', $_product->is_visible() ? $_product->get_permalink( $cart_item ) : '', $cart_item, $cart_item_key );
+                                            ?>
+
+
                                     <div class="top-cart-item clearfix">
                                         <div class="top-cart-item-image">
-                                            <a href="#"><img src="images/shop/small/1.jpg" /></a>
+                                            <?php
+                                                $thumbnail = apply_filters( 'woocommerce_cart_item_thumbnail', $_product->get_image(), $cart_item, $cart_item_key );
+
+                                                if ( ! $product_permalink ) {
+                                                    echo $thumbnail; // PHPCS: XSS ok.
+                                                } else {
+                                                    printf( '<a href="%s">%s</a>', esc_url( $product_permalink ), $thumbnail ); // PHPCS: XSS ok.
+                                                }
+                                                ?>
                                         </div>
                                         <div class="top-cart-item-desc">
-                                            <a href="#">Blue Round-Neck Tshirt</a>
-                                            <span class="top-cart-item-price">$19.99</span>
-                                            <span class="top-cart-item-quantity">x 2</span>
+                                            <?php
+                                                if ( ! $product_permalink ) {
+                                                    echo wp_kses_post( apply_filters( 'woocommerce_cart_item_name', $_product->get_name(), $cart_item, $cart_item_key ) . '&nbsp;' );
+                                                } else {
+                                                    echo wp_kses_post( apply_filters( 'woocommerce_cart_item_name', sprintf( '<a href="%s">%s</a>', esc_url( $product_permalink ), $_product->get_name() ), $cart_item, $cart_item_key ) );
+                                                }
+
+                                                do_action( 'woocommerce_after_cart_item_name', $cart_item, $cart_item_key );
+
+                                                // Meta data.
+                                                echo wc_get_formatted_cart_item_data( $cart_item ); // PHPCS: XSS ok.
+
+                                                // Backorder notification.
+                                                if ( $_product->backorders_require_notification() && $_product->is_on_backorder( $cart_item['quantity'] ) ) {
+                                                    echo wp_kses_post( apply_filters( 'woocommerce_cart_item_backorder_notification', '<p class="backorder_notification">' . esc_html__( 'Available on backorder', 'woocommerce' ) . '</p>', $product_id ) );
+                                                }
+                                                ?>
+                                            <span class="top-cart-item-price"><?php
+                                                        echo apply_filters( 'woocommerce_cart_item_price', WC()->cart->get_product_price( $_product ), $cart_item, $cart_item_key ); // PHPCS: XSS ok.
+                                                    ?></span>
+                                            <span
+                                                class="top-cart-item-quantity"><?php echo $cart_item['quantity'];?></span>
                                         </div>
                                     </div>
-                                    <div class="top-cart-item clearfix">
-                                        <div class="top-cart-item-image">
-                                            <a href="#"><img src="images/shop/small/6.jpg"/></a>
-                                        </div>
-                                        <div class="top-cart-item-desc">
-                                            <a href="#">Light Blue Denim Dress</a>
-                                            <span class="top-cart-item-price">$24.99</span>
-                                            <span class="top-cart-item-quantity">x 3</span>
-                                        </div>
-                                    </div>
+
+                                    <?php
+                                        }
+                                    }
+                                    ?>
                                 </div>
                                 <div class="top-cart-action clearfix">
-                                    <span class="fleft top-checkout-price">$114.95</span>
-                                    <button class="button button-3d button-small nomargin fright">
+                                    <span
+                                        class="fleft top-checkout-price"><?php echo WC()->cart->get_cart_total(); ?></span>
+                                    <a href="<?php echo wc_get_cart_url(); ?>"
+                                        class="button button-3d button-small nomargin fright">
                                         View Cart
-                                    </button>
+                                    </a>
                                 </div>
                             </div>
                         </div><!-- #top-cart end -->
@@ -180,17 +227,17 @@
                                 <i class="icon-search3"></i><i class="icon-line-cross"></i>
                             </a>
                             <form action="<?php echo esc_url( home_url( '/' ) ); ?>" method="get">
-                                <input type="text" name="q"
-                                       class="form-control" placeholder="<?php _e( 'Type &amp; Hit Enter..', 'udemy' ); ?>"
-                                       value="<?php the_search_query(); ?>">
+                                <input type="text" name="q" class="form-control"
+                                    placeholder="<?php _e( 'Type &amp; Hit Enter..', 'udemy' ); ?>"
+                                    value="<?php the_search_query(); ?>">
                             </form>
                         </div><!-- #top-search end -->
-                        
+
                         <?php }
 
                         ?>
 
-                       
+
                     </div>
 
                 </nav><!-- #primary-menu end -->
